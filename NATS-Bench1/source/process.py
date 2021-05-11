@@ -122,18 +122,18 @@ def compute_low_rank(tensor: torch.Tensor,
 def get_metrics(params,key1,key2):
     layer_tensor=params[key1][key2]
     tensor_size = layer_tensor.shape
-    print(tensor_size)
+    #print(tensor_size)
     #print(layer_tensor)
     mode_3_unfold = layer_tensor.permute(1, 0, 2, 3)
     mode_3_unfold = torch.reshape(
                         mode_3_unfold, [tensor_size[1], tensor_size[0] *
                                         tensor_size[2] * tensor_size[3]])
     in_rank, in_KG, in_condition = compute_low_rank(mode_3_unfold,tensor_size[1])
-    print("in:", in_rank, in_KG, in_condition)
+    #print("in:", in_rank, in_KG, in_condition)
     mode_4_unfold = layer_tensor
     mode_4_unfold = torch.reshape(
                         mode_4_unfold, [tensor_size[0], tensor_size[1] *
                                         tensor_size[2] * tensor_size[3]])
     out_rank, out_KG, out_condition = compute_low_rank(mode_4_unfold, tensor_size[0])
-    print("out:", out_rank, out_KG, out_condition)
+    #print("out:", out_rank, out_KG, out_condition)
     return (in_rank + out_rank)/2, (in_KG + out_KG)/2, (in_condition + out_condition)/2
