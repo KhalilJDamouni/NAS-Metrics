@@ -1,3 +1,4 @@
-NATS-Bench1/fake_torch_dir/
-NATS-Bench1/outputs/
-NATS-Bench1/models/
+NATS-Bench1/fake_torch_dir
+NATS-Bench1/outputs
+NATS-Bench1/models
+outputs

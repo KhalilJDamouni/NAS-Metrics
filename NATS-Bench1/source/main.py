@@ -7,6 +7,7 @@ import os
 import math
 import process
 import correlate
+import save
 import numpy.linalg as LA
 import numpy as np
 from nats_bench import create
@@ -56,6 +57,8 @@ if __name__ == "__main__":
     model_qualities = []
     test_accuracy = []
 
+    file_name = save.get_name()
+
     for model in pickles:
         model_vals = []
         if(i>early_stop):
@@ -78,6 +81,7 @@ if __name__ == "__main__":
             print("skipping meta")
         i+=1
         print(model_vals)
+        save.write(file_name,model_vals)
 
 
     '''
