@@ -29,13 +29,15 @@ def get_quality(model_params,L):
     for i in model_params:
         for k, v in (model_params[i]).items():
             if('weight' in k and len(list(v.size())) == 4 and v.shape[3]!=1):
-                print(k)
-                print("\n")
+                #print(k)
+                #print("\n")
                 rank, KG, condition = process.get_metrics(model_params,i,k)
                 try:
-                    quality_list.append(math.atan(KG/(1-1/condition)))
+                    #print(condition)
+                    #print(math.atan(KG/(1.0-1.0/condition)))
+                    quality_list.append(math.atan(KG/(1.0-1.0/condition)))
                 except:
-                    quality_list.append(0)
+                    quality_list.append(math.pi/2.0)
     temp = norm(quality_list,L)
     return temp
 
@@ -45,25 +47,32 @@ if __name__ == "__main__":
     dataset = 'cifar10'
     hp = '200'
     L = 1
+    early_stop=10
+    i=0
 
     pickles=glob.glob(sys.path[0][0:-7]+'/fake_torch_dir/NATS-tss-v1_0-3ffb9-full/*')
     model_qualities = []
     test_accuracy = []
 
     for model in pickles:
+        if(i>early_stop):
+            break
         try:
             model_num = int((model.split(os.path.sep)[-1]).split('.')[0])
-            print(model_num)
+            print(str(model_num)+"\n")
             info = api.get_more_info(model_num, dataset, hp=hp, is_random=False)
             test_accuracy.append(info['test-accuracy']/100)
             params = api.get_net_param(model_num, dataset, None)
             model_qualities.append(get_quality(params,L))
         except:
             print("skipping meta")
-    
-    p_corr = correlate.pearson_corr(model_qualities, test_accuracy)
-    ro_corr = correlate.rank_order_corr(model_qualities, test_accuracy)
-    
-    print(p_corr,ro_corr)
+        i+=1
 
-    correlate.display(model_qualities, test_accuracy)
+    #print(str(model_qualities),str(test_accuracy))
+
+    #p_corr = correlate.pearson_corr(model_qualities, test_accuracy)
+    #ro_corr = correlate.rank_order_corr(model_qualities, test_accuracy)
+    
+    #print(p_corr,ro_corr)
+
+    #correlate.display(model_qualities, test_accuracy)
