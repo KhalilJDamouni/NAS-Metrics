@@ -42,7 +42,7 @@ def get_quality(model_params):
                     #print(math.atan(KG/(1.0-1.0/condition)))
                     quality_list.append(math.atan(KG/(1.0-1.0/condition)))
                 except:
-                    quality_list.append(math.pi/2.0)
+                    quality_list.append(0)
     return [norm(quality_list,1),norm(quality_list,2),norm(KG_list,1),norm(condition_list,1)]
 
 
