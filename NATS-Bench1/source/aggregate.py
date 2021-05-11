@@ -1,5 +1,6 @@
 import numpy.linalg as LA
 import numpy as np
+import math
 
 def norm(x, L):
     #L: L1, or L2.
@@ -7,9 +8,9 @@ def norm(x, L):
         print("Error: L must be 1 or 2")
         exit()
     if(L == 1):
-        return sum(abs(x)) 
+        return sum(abs(x))/len(x)
     if(L == 2):
-        return LA.norm(x)
+        return LA.norm(x)/math.sqrt(len(x))
 
 
 if __name__ == "__main__":
