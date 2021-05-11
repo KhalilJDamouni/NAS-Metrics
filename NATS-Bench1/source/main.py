@@ -2,12 +2,13 @@ from __future__ import division
 import sys
 import random
 import torch
+import glob
 import numpy as np
-from .process import *
+#from .process import *
 from nats_bench import create
 from scipy.optimize import minimize_scalar
 from pprint import pprint
-
+'''
 # Create the API for tologoy search space
 api = create(sys.path[0][0:-7]+'/fake_torch_dir/NATS-tss-v1_0-3ffb9-full', 'tss', fast_mode=True, verbose=False)
 dataset = 'cifar10'
@@ -33,3 +34,8 @@ def get_quality(model_params):
 
 
 def accumulate_quality(model_quality)
+'''
+api = create(sys.path[0][0:-7]+'/fake_torch_dir/NATS-tss-v1_0-3ffb9-full', 'tss', fast_mode=True, verbose=False)
+dataset = 'cifar10'
+hp = '200'
+info = api.get_more_info('000531', dataset, hp, is_random=False)
