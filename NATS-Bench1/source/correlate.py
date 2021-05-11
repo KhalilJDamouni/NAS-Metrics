@@ -6,12 +6,12 @@ def display(x, y, degree = None): #Add Type
     #Add Docstring
     plt.scatter(x, y)
     plt.show()
-    if(degree != None):
-        ##Doesn't work yet. Will fix.
-        break
-        poly = np.polyfit(x, y, degree)
-        plt.plot(sort(x), np.polyval(poly, sort(x)))
-        plt.show()
+    #if(degree != None):
+    #    break
+    #    ##Doesn't work yet. Will fix.
+    #    poly = np.polyfit(x, y, degree)
+    #    plt.plot(sort(x), np.polyval(poly, sort(x)))
+    #    plt.show()
 
 def rank_order_corr(x, y): #Add Type
     #Add Docstring
