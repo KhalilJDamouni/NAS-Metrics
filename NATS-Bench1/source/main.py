@@ -14,10 +14,10 @@ from nats_bench import create
 from scipy.optimize import minimize_scalar
 from pprint import pprint
 
-def norm(x, L):
+def norm(x, L, a=[]):
     #L: L1, or L2.
-    if(L not in  [1, 2, 3]):
-        print("Error: L must be 1, 2 or 3")
+    if(L not in  [1, 2, 3, 4, 5]):
+        print("Error: L must be 1:5")
         exit()
     if(L == 1):
         return np.mean(np.abs(x))
@@ -25,6 +25,12 @@ def norm(x, L):
         return LA.norm(x)/math.sqrt(len(x))
     if(L == 3):
         return np.power(np.prod(x),1/len(x))
+    if(L == 4):
+        #weighted average
+        return np.average(np.abs(x),weights=a)
+    if(L == 5):
+        #weighted product
+        return np.prod(np.power(x,a/(np.sum(a)*len(x))))
 
 
 def get_quality(model_params):
@@ -33,17 +39,20 @@ def get_quality(model_params):
     condition_list = []
     ER_list = []
     mquality_list = []
+    weights = []
     for i in model_params:
         for k, v in (model_params[i]).items():
             if('weight' in k and len(list(v.size())) == 4 and v.shape[3]!=1):
                 #print(k)
                 #print("\n")
-                rank, KG, condition, ER, in_quality, out_quality = process.get_metrics(model_params,i,k)
+                rank, KG, condition, ER, in_quality, out_quality, in_weight, out_weight = process.get_metrics(model_params,i,k)
                 #print(KG)
                 if(in_quality>0):
                     mquality_list.append(in_quality)
+                    weights.append(in_weight)
                 if(out_quality>0):
                     mquality_list.append(out_quality)
+                    weights.append(out_weight)
                 if(KG>0 and condition>1):
                     #print(condition)
                     #print(math.atan(KG/(1.0-1.0/condition)))
@@ -54,7 +63,7 @@ def get_quality(model_params):
     if(len(KG_list)==0):
         return None
     else:
-        return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(condition_list,3),norm(ER_list,1),norm(mquality_list,1),norm(mquality_list,3)]
+        return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(condition_list,3),norm(ER_list,1),norm(mquality_list,1),norm(mquality_list,3),norm(mquality_list,4,weights),norm(mquality_list,5,weights)]
 
 
 if __name__ == "__main__":
