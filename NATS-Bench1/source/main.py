@@ -16,13 +16,15 @@ from pprint import pprint
 
 def norm(x, L):
     #L: L1, or L2.
-    if(L not in  [1, 2]):
-        print("Error: L must be 1 or 2")
+    if(L not in  [1, 2, 3]):
+        print("Error: L must be 1, 2 or 3")
         exit()
     if(L == 1):
         return np.mean(np.abs(x))
     if(L == 2):
         return LA.norm(x)/math.sqrt(len(x))
+    if(L == 3):
+        return np.prod(x)
 
 
 def get_quality(model_params):
@@ -36,16 +38,20 @@ def get_quality(model_params):
                 #print(k)
                 #print("\n")
                 rank, KG, condition, ER = process.get_metrics(model_params,i,k)
-                KG_list.append(KG)
-                condition_list.append(condition)
-                ER_list.append(ER)
+                #print(KG)
                 if(KG>0):
                     #print(condition)
                     #print(math.atan(KG/(1.0-1.0/condition)))
+                    condition_list.append(condition)
+                    ER_list.append(ER)
+                    KG_list.append(KG)
                     quality_list.append(math.atan(KG/(1.0-1.0/condition)))
                 else:
-                    return None
-    return [norm(quality_list,1),norm(quality_list,2),norm(KG_list,1),norm(condition_list,1),norm(ER_list,1)]
+                    print("skipping 0 layer")
+    if(len(KG_list)==0):
+        return None
+    else:
+        return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(ER_list,1)]
 
 
 if __name__ == "__main__":
@@ -59,8 +65,12 @@ if __name__ == "__main__":
     #model_qualities = []
     #test_accuracy = []
 
+    
     file_name = save.get_name()
-
+    '''
+    params = api.get_net_param(10273, dataset, None)
+    model_val = get_quality(params)
+    '''
     for model in pickles:
         model_vals = []
         if(i>early_stop):
@@ -69,7 +79,8 @@ if __name__ == "__main__":
             model_num = int((model.split(os.path.sep)[-1]).split('.')[0])
             print(str(model_num)+"\n")
             params = api.get_net_param(model_num, dataset, None)
-            if(params):
+            model_val = get_quality(params)
+            if(model_val):
                 model_vals.append(model_num)
                 info = api.get_more_info(model_num, dataset, hp=hp, is_random=False)
                 #test_accuracy.append(info['test-accuracy']/100)
@@ -79,11 +90,11 @@ if __name__ == "__main__":
                 model_vals.append(info['train-accuracy']/100)
                 model_vals.append(info['train-loss'])
                 #model_qualities.append(get_quality(params))
-                model_vals.extend(get_quality(params))
-                print(model_vals)
+                model_vals.extend(model_val)
+                #print(model_vals)
                 save.write(file_name,model_vals)
             else:
-                print("0 layer")
+                print("skipping 0 model")
         except:
             print("skipping meta")
         i+=1

@@ -103,6 +103,7 @@ def compute_low_rank(tensor: torch.Tensor,
         tensor_size = tensor.shape
         if tensor_size[0] > tensor_size[1]:
             tensor = tensor.T
+            tensor_size = tensor.shape
         U_approx, S_approx, V_approx = EVBMF(tensor)
     except RuntimeError:
         return None, None, None
@@ -118,7 +119,6 @@ def compute_low_rank(tensor: torch.Tensor,
         effective_rank = np.sum(effective_rank)
         sum_low_rank_eigen = np.sum(sum_low_rank_eigen)
     else:
-        print("0 layer")
         condition = 0
         effective_rank = 0
         sum_low_rank_eigen = 0
