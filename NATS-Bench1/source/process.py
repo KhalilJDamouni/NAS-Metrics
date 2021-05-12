@@ -142,4 +142,4 @@ def get_metrics(params,key1,key2):
                                         tensor_size[2] * tensor_size[3]])
     out_rank, out_KG, out_condition, out_ER = compute_low_rank(mode_4_unfold, tensor_size[0])
     #print("out:", out_rank, out_KG, out_condition)
-    return (in_rank + out_rank)/2, (in_KG + out_KG)/2, (in_condition + out_condition)/2, (in_ER + out_ER)/2
+    return (in_rank + out_rank)/2, (in_KG + out_KG)/2, (in_condition + out_condition), (in_ER + out_ER)/2

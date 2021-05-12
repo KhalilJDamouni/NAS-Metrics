@@ -39,15 +39,13 @@ def get_quality(model_params):
                 #print("\n")
                 rank, KG, condition, ER = process.get_metrics(model_params,i,k)
                 #print(KG)
-                if(KG>0):
+                if(KG>0 and condition>1):
                     #print(condition)
                     #print(math.atan(KG/(1.0-1.0/condition)))
                     condition_list.append(condition)
                     ER_list.append(ER)
                     KG_list.append(KG)
                     quality_list.append(math.atan(KG/(1.0-1.0/condition)))
-                else:
-                    print("skipping 0 layer")
     if(len(KG_list)==0):
         return None
     else:
@@ -68,8 +66,9 @@ if __name__ == "__main__":
     
     file_name = save.get_name()
     '''
-    params = api.get_net_param(10273, dataset, None)
+    params = api.get_net_param(11197, dataset, None)
     model_val = get_quality(params)
+
     '''
     for model in pickles:
         model_vals = []
@@ -77,6 +76,7 @@ if __name__ == "__main__":
             break
         try:
             model_num = int((model.split(os.path.sep)[-1]).split('.')[0])
+            print(str(i+1))
             print(str(model_num)+"\n")
             params = api.get_net_param(model_num, dataset, None)
             model_val = get_quality(params)
