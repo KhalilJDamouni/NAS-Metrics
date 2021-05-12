@@ -72,45 +72,57 @@ if __name__ == "__main__":
     hp = '200'
     early_stop=300
     i=0
+    new = 1
 
     pickles=glob.glob(sys.path[0][0:-7]+'/fake_torch_dir/models/*')
     #model_qualities = []
     #test_accuracy = []
 
-    
-    file_name = save.get_name()
+    if(new):
+        file_name = save.get_name()
+    else:
+        file_name = "outputs/correlation-" + "05-12-2021_16-25-05" + ".csv"
+        lastmodel = 10505
     '''
     params = api.get_net_param(11197, dataset, None)
     model_val = get_quality(params)
 
     '''
     for model in pickles:
+        if(not new):
+            i+=1
+            early_stop+=1
+            model_num = int((model.split(os.path.sep)[-1]).split('.')[0])
+            if(model_num==lastmodel):
+                new = 1
+            continue
         model_vals = []
         if(i+1>early_stop):
             break
-        #try:
-        model_num = int((model.split(os.path.sep)[-1]).split('.')[0])
-        print(str(i+1)+'/'+str(early_stop))
-        print("model: "+str(model_num)+"\n")
-        params = api.get_net_param(model_num, dataset, None)
-        model_val = get_quality(params)
-        if(model_val):
-            model_vals.append(model_num)
-            info = api.get_more_info(model_num, dataset, hp=hp, is_random=False)
-            #test_accuracy.append(info['test-accuracy']/100)
-            #print(info)
-            model_vals.append(info['test-accuracy']/100)
-            model_vals.append(info['test-loss'])
-            model_vals.append(info['train-accuracy']/100)
-            model_vals.append(info['train-loss'])
-            #model_qualities.append(get_quality(params))
-            model_vals.extend(model_val)
-            #print(model_vals)
-            save.write(file_name,model_vals)
-        else:
-            print("skipping 0 model")
-        #except:
-            #print("skipping meta")
+        try:
+            model_num = int((model.split(os.path.sep)[-1]).split('.')[0])
+            print(str(i+1)+'/'+str(early_stop))
+            print("model: "+str(model_num))
+            params = api.get_net_param(model_num, dataset, None)
+            model_val = get_quality(params)
+            if(model_val):
+                model_vals.append(model_num)
+                info = api.get_more_info(model_num, dataset, hp=hp, is_random=False)
+                #test_accuracy.append(info['test-accuracy']/100)
+                #print(info)
+                model_vals.append(info['test-accuracy']/100)
+                model_vals.append(info['test-loss'])
+                model_vals.append(info['train-accuracy']/100)
+                model_vals.append(info['train-loss'])
+                #model_qualities.append(get_quality(params))
+                model_vals.extend(model_val)
+                #print(model_vals)
+                save.write(file_name,model_vals)
+            else:
+                print("skipping 0 model")
+        except:
+            print("skipping meta")
+        print("\n")
         i+=1
 
 
