@@ -112,12 +112,18 @@ def compute_low_rank(tensor: torch.Tensor,
         condition = low_rank_eigen[0] / low_rank_eigen[-1]
         sum_low_rank_eigen = low_rank_eigen / \
             max(low_rank_eigen)
+        effective_rank = sum_low_rank_eigen/tensor_size[0]
+        effective_rank_ln = np.log(effective_rank)
+        effective_rank = np.multiply(effective_rank,effective_rank_ln)
+        effective_rank = np.sum(effective_rank)
         sum_low_rank_eigen = np.sum(sum_low_rank_eigen)
     else:
+        print("0 layer")
         condition = 0
+        effective_rank = 0
         sum_low_rank_eigen = 0
     KG = sum_low_rank_eigen / tensor_size[0]  # normalizer
-    return rank, KG, condition
+    return rank, KG, condition, effective_rank
 
 def get_metrics(params,key1,key2):
     layer_tensor=params[key1][key2]
@@ -128,12 +134,12 @@ def get_metrics(params,key1,key2):
     mode_3_unfold = torch.reshape(
                         mode_3_unfold, [tensor_size[1], tensor_size[0] *
                                         tensor_size[2] * tensor_size[3]])
-    in_rank, in_KG, in_condition = compute_low_rank(mode_3_unfold,tensor_size[1])
+    in_rank, in_KG, in_condition, in_ER = compute_low_rank(mode_3_unfold,tensor_size[1])
     #print("in:", in_rank, in_KG, in_condition)
     mode_4_unfold = layer_tensor
     mode_4_unfold = torch.reshape(
                         mode_4_unfold, [tensor_size[0], tensor_size[1] *
                                         tensor_size[2] * tensor_size[3]])
-    out_rank, out_KG, out_condition = compute_low_rank(mode_4_unfold, tensor_size[0])
+    out_rank, out_KG, out_condition, out_ER = compute_low_rank(mode_4_unfold, tensor_size[0])
     #print("out:", out_rank, out_KG, out_condition)
-    return (in_rank + out_rank)/2, (in_KG + out_KG)/2, (in_condition + out_condition)/2
+    return (in_rank + out_rank)/2, (in_KG + out_KG)/2, (in_condition + out_condition)/2, (in_ER + out_ER)/2

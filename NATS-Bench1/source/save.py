@@ -9,7 +9,7 @@ def get_name():
 
     with open(name, 'w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['model_num','test_acc','test_loss','train_acc','train_loss','quality_L1', 'quality_L2','KG_L1', 'MC_L1'])
+        writer.writerow(['model_num','test_acc','test_loss','train_acc','train_loss','quality_L1', 'quality_L2','KG_L1', 'MC_L1','ER_L1'])
         #file.write('\n')
 
     return name
