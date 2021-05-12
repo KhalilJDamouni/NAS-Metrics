@@ -1,4 +1,5 @@
 from __future__ import division
+import math
 import sys
 import random
 import torch
@@ -135,11 +136,19 @@ def get_metrics(params,key1,key2):
                         mode_3_unfold, [tensor_size[1], tensor_size[0] *
                                         tensor_size[2] * tensor_size[3]])
     in_rank, in_KG, in_condition, in_ER = compute_low_rank(mode_3_unfold,tensor_size[1])
+    try:
+        in_quality = math.atan(in_KG/(1-1/in_condition))
+    except:
+        in_quality = 0
     #print("in:", in_rank, in_KG, in_condition)
     mode_4_unfold = layer_tensor
     mode_4_unfold = torch.reshape(
                         mode_4_unfold, [tensor_size[0], tensor_size[1] *
                                         tensor_size[2] * tensor_size[3]])
     out_rank, out_KG, out_condition, out_ER = compute_low_rank(mode_4_unfold, tensor_size[0])
+    try:
+        out_quality = math.atan(out_KG/(1-1/out_condition))
+    except:
+        out_quality = 0
     #print("out:", out_rank, out_KG, out_condition)
-    return (in_rank + out_rank)/2, (in_KG + out_KG)/2, (in_condition + out_condition), (in_ER + out_ER)/2
+    return (in_rank + out_rank)/2, (in_KG + out_KG)/2, (in_condition + out_condition), (in_ER + out_ER)/2, in_quality, out_quality

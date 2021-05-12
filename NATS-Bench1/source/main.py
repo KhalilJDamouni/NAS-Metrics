@@ -32,13 +32,18 @@ def get_quality(model_params):
     KG_list = []
     condition_list = []
     ER_list = []
+    mquality_list = []
     for i in model_params:
         for k, v in (model_params[i]).items():
             if('weight' in k and len(list(v.size())) == 4 and v.shape[3]!=1):
                 #print(k)
                 #print("\n")
-                rank, KG, condition, ER = process.get_metrics(model_params,i,k)
+                rank, KG, condition, ER, in_quality, out_quality = process.get_metrics(model_params,i,k)
                 #print(KG)
+                if(in_quality>0):
+                    mquality_list.append(in_quality)
+                if(out_quality>0):
+                    mquality_list.append(out_quality)
                 if(KG>0 and condition>1):
                     #print(condition)
                     #print(math.atan(KG/(1.0-1.0/condition)))
@@ -49,7 +54,7 @@ def get_quality(model_params):
     if(len(KG_list)==0):
         return None
     else:
-        return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(ER_list,1)]
+        return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(condition_list,3),norm(ER_list,1),norm(mquality_list,1),norm(mquality_list,3)]
 
 
 if __name__ == "__main__":
@@ -72,31 +77,31 @@ if __name__ == "__main__":
     '''
     for model in pickles:
         model_vals = []
-        if(i>early_stop):
+        if(i+1>early_stop):
             break
-        try:
-            model_num = int((model.split(os.path.sep)[-1]).split('.')[0])
-            print(str(i+1))
-            print(str(model_num)+"\n")
-            params = api.get_net_param(model_num, dataset, None)
-            model_val = get_quality(params)
-            if(model_val):
-                model_vals.append(model_num)
-                info = api.get_more_info(model_num, dataset, hp=hp, is_random=False)
-                #test_accuracy.append(info['test-accuracy']/100)
-                #print(info)
-                model_vals.append(info['test-accuracy']/100)
-                model_vals.append(info['test-loss'])
-                model_vals.append(info['train-accuracy']/100)
-                model_vals.append(info['train-loss'])
-                #model_qualities.append(get_quality(params))
-                model_vals.extend(model_val)
-                #print(model_vals)
-                save.write(file_name,model_vals)
-            else:
-                print("skipping 0 model")
-        except:
-            print("skipping meta")
+        #try:
+        model_num = int((model.split(os.path.sep)[-1]).split('.')[0])
+        print(str(i+1)+'/'+str(early_stop))
+        print("model: "+str(model_num)+"\n")
+        params = api.get_net_param(model_num, dataset, None)
+        model_val = get_quality(params)
+        if(model_val):
+            model_vals.append(model_num)
+            info = api.get_more_info(model_num, dataset, hp=hp, is_random=False)
+            #test_accuracy.append(info['test-accuracy']/100)
+            #print(info)
+            model_vals.append(info['test-accuracy']/100)
+            model_vals.append(info['test-loss'])
+            model_vals.append(info['train-accuracy']/100)
+            model_vals.append(info['train-loss'])
+            #model_qualities.append(get_quality(params))
+            model_vals.extend(model_val)
+            #print(model_vals)
+            save.write(file_name,model_vals)
+        else:
+            print("skipping 0 model")
+        #except:
+            #print("skipping meta")
         i+=1
 
 
