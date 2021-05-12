@@ -24,7 +24,7 @@ def norm(x, L):
     if(L == 2):
         return LA.norm(x)/math.sqrt(len(x))
     if(L == 3):
-        return np.prod(x)
+        return np.power(np.prod(x),1/len(x))
 
 
 def get_quality(model_params):
@@ -58,7 +58,7 @@ if __name__ == "__main__":
     api = create(sys.path[0][0:-7]+'/fake_torch_dir/models', 'tss', fast_mode=True, verbose=False)
     dataset = 'cifar10'
     hp = '200'
-    early_stop=60
+    early_stop=300
     i=0
 
     pickles=glob.glob(sys.path[0][0:-7]+'/fake_torch_dir/models/*')
