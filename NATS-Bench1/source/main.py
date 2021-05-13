@@ -35,6 +35,7 @@ def norm(x, L, a=[]):
 
 def get_quality(model_params):
     quality_list = []
+    quality_new_list = []
     KG_list = []
     condition_list = []
     ER_list = []
@@ -45,13 +46,15 @@ def get_quality(model_params):
             if('weight' in k and len(list(v.size())) == 4 and v.shape[3]!=1):
                 #print(k)
                 #print("\n")
-                rank, KG, condition, ER, in_quality, out_quality, in_weight, out_weight = process.get_metrics(model_params,i,k)
+                rank, KG, condition, ER, in_quality, out_quality, in_weight, out_weight, in_quality_new, out_quality_new = process.get_metrics(model_params,i,k)
                 #print(KG)
                 if(in_quality>0):
                     mquality_list.append(in_quality)
+                    quality_new_list.append(in_quality_new)
                     weights.append(in_weight)
                 if(out_quality>0):
                     mquality_list.append(out_quality)
+                    quality_new_list.append(out_quality_new)
                     weights.append(out_weight)
                 if(KG>0 and condition>1):
                     #print(condition)
@@ -60,10 +63,14 @@ def get_quality(model_params):
                     ER_list.append(ER)
                     KG_list.append(KG)
                     quality_list.append(math.atan(KG/(1.0-1.0/condition)))
+    print(str(len(KG_list)),str(sum(weights)))
     if(len(KG_list)==0):
         return None
     else:
-        return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(condition_list,3),norm(ER_list,1),norm(mquality_list,1),norm(mquality_list,3),norm(mquality_list,4,weights),norm(mquality_list,5,weights),mquality_list[0],mquality_list[1],mquality_list[-1],mquality_list[-2],KG_list[0],KG_list[-1],condition_list[0],condition_list[-1]]
+        return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(condition_list,3),norm(ER_list,1),
+        norm(mquality_list,1),norm(mquality_list,3),norm(mquality_list,4,weights),norm(mquality_list,5,weights),mquality_list[0],mquality_list[1],mquality_list[-1],
+        mquality_list[-2],KG_list[0],KG_list[-1],condition_list[0],condition_list[-1],norm(quality_new_list,1),norm(quality_new_list,3),norm(quality_new_list,4,weights),
+        norm(quality_new_list,5,weights)]
 
 
 if __name__ == "__main__":
