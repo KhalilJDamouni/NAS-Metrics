@@ -155,3 +155,12 @@ def get_metrics(params,key1,key2):
         out_quality = 0
     #print("out:", out_rank, out_KG, out_condition)
     return (in_rank + out_rank)/2, (in_KG + out_KG)/2, (in_condition + out_condition), (in_ER + out_ER)/2, in_quality, out_quality, in_weight, out_weight
+
+
+if __name__ == "__main__":
+    #Testing
+    print("Testing")
+    inp2 = torch.Tensor([[200,1,200,200,4,6],[0.1, 0.1, 0.1, 200, 200, 200],[0.1,0.1,0.1,0.1,0.1,0.1]])
+    print(inp2)
+    print("EVBMF output: ",EVBMF(inp2))
+    #print("output: " , compute_low_rank(inp,1))
