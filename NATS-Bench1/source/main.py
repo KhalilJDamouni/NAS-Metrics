@@ -63,7 +63,7 @@ def get_quality(model_params):
     if(len(KG_list)==0):
         return None
     else:
-        return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(condition_list,3),norm(ER_list,1),norm(mquality_list,1),norm(mquality_list,3),norm(mquality_list,4,weights),norm(mquality_list,5,weights)]
+        return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(condition_list,3),norm(ER_list,1),norm(mquality_list,1),norm(mquality_list,3),norm(mquality_list,4,weights),norm(mquality_list,5,weights),mquality_list[0],mquality_list[1],mquality_list[-1],mquality_list[-2],KG_list[0],KG_list[-1],condition_list[0],condition_list[-1]]
 
 
 if __name__ == "__main__":

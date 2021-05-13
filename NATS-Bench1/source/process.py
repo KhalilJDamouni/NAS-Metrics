@@ -110,6 +110,7 @@ def compute_low_rank(tensor: torch.Tensor,
         return None, None, None
     rank = S_approx.shape[0] / tensor_size[0]  # normalizer
     low_rank_eigen = torch.diag(S_approx).data.cpu().numpy()
+    #print(S_approx)
     if len(low_rank_eigen) != 0:
         condition = low_rank_eigen[0] / low_rank_eigen[-1]
         sum_low_rank_eigen = low_rank_eigen / \
