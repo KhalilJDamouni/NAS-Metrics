@@ -30,7 +30,7 @@ def norm(x, L, a=[]):
         return np.average(np.abs(x),weights=a)
     if(L == 5):
         #weighted product
-        return np.prod(np.power(x,a/(np.sum(a)*len(x))))
+        return np.prod(np.power(x,a/(np.sum(a))))
 
 
 def get_quality(model_params):
@@ -99,6 +99,7 @@ if __name__ == "__main__":
         model_vals = []
         if(i+1>early_stop):
             break
+
         try:
             model_num = int((model.split(os.path.sep)[-1]).split('.')[0])
             print(str(i+1)+'/'+str(early_stop))
@@ -122,6 +123,7 @@ if __name__ == "__main__":
                 print("skipping 0 model")
         except:
             print("skipping meta")
+            
         print("\n")
         i+=1
 
