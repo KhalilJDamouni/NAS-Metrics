@@ -141,9 +141,11 @@ def get_metrics(params,key1,key2):
     try:
         in_quality = math.atan(in_KG/(1-1/in_condition))
         in_quality_new = in_KG/in_condition
+        in_quality_newp = in_KG/(1/1/in_condition)
     except:
         in_quality = 0
         in_quality_new = 0
+        in_quality_newp = 0
     #print("in:", in_rank, in_KG, in_condition)
     mode_4_unfold = layer_tensor
     mode_4_unfold = torch.reshape(
@@ -154,11 +156,13 @@ def get_metrics(params,key1,key2):
     try:
         out_quality = math.atan(out_KG/(1-1/out_condition))
         out_quality_new = out_KG/out_condition
+        out_quality_newp = out_KG/(1/1/out_condition)
     except:
         out_quality = 0
         out_quality_new = 0
+        out_quality_newp = 0
     #print("out:", out_rank, out_KG, out_condition)
-    return (in_rank + out_rank)/2, (in_KG + out_KG)/2, (in_condition + out_condition), (in_ER + out_ER)/2, in_quality, out_quality, in_weight, out_weight, in_quality_new, out_quality_new
+    return (in_rank + out_rank)/2, (in_KG + out_KG)/2, (in_condition + out_condition), (in_ER + out_ER)/2, in_quality, out_quality, in_weight, out_weight, in_quality_new, out_quality_new, in_quality_newp, out_quality_newp
 
 
 if __name__ == "__main__":

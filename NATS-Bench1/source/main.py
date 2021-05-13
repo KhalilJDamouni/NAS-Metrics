@@ -1,6 +1,7 @@
 from __future__ import division
 import sys
 import random
+from numpy.core.function_base import linspace
 import torch
 import glob
 import os
@@ -16,8 +17,8 @@ from pprint import pprint
 
 def norm(x, L, a=[]):
     #L: L1, or L2.
-    if(L not in  [1, 2, 3, 4, 5]):
-        print("Error: L must be 1:5")
+    if(L not in range(1,8)):
+        print("Error: L must be 1:7")
         exit()
     if(L == 1):
         return np.mean(np.abs(x))
@@ -31,11 +32,23 @@ def norm(x, L, a=[]):
     if(L == 5):
         #weighted product
         return np.prod(np.power(x,a/(np.sum(a))))
+    if(L == 6):
+        #weighted product with linear depth weights as well
+        depth = np.arange(len(x))+1
+        a = a*depth
+        return np.prod(np.power(x,a/(np.sum(a))))
+    if(L == 7):
+        depth = np.flip(np.arange(len(x))+1)
+        a = a*depth
+        return np.prod(np.power(x,a/(np.sum(a))))
+
 
 
 def get_quality(model_params):
     quality_list = []
     quality_new_list = []
+    quality_newr_list = []
+    quality_newpr_list = []
     KG_list = []
     condition_list = []
     ER_list = []
@@ -46,15 +59,19 @@ def get_quality(model_params):
             if('weight' in k and len(list(v.size())) == 4 and v.shape[3]!=1):
                 #print(k)
                 #print("\n")
-                rank, KG, condition, ER, in_quality, out_quality, in_weight, out_weight, in_quality_new, out_quality_new = process.get_metrics(model_params,i,k)
+                rank, KG, condition, ER, in_quality, out_quality, in_weight, out_weight, in_quality_new, out_quality_new, in_quality_newp, out_quality_newp = process.get_metrics(model_params,i,k)
                 #print(KG)
                 if(in_quality>0):
                     mquality_list.append(in_quality)
                     quality_new_list.append(in_quality_new)
+                    quality_newr_list.append(1/in_quality_new)
+                    quality_newpr_list.append(1/in_quality_newp)
                     weights.append(in_weight)
                 if(out_quality>0):
                     mquality_list.append(out_quality)
                     quality_new_list.append(out_quality_new)
+                    quality_newr_list.append(1/out_quality_new)
+                    quality_newpr_list.append(1/out_quality_newp)
                     weights.append(out_weight)
                 if(KG>0 and condition>1):
                     #print(condition)
@@ -63,14 +80,16 @@ def get_quality(model_params):
                     ER_list.append(ER)
                     KG_list.append(KG)
                     quality_list.append(math.atan(KG/(1.0-1.0/condition)))
-    print(str(len(KG_list)),str(sum(weights)))
+    #print(str(len(KG_list)),str(sum(weights)))
     if(len(KG_list)==0):
         return None
     else:
         return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(condition_list,3),norm(ER_list,1),
         norm(mquality_list,1),norm(mquality_list,3),norm(mquality_list,4,weights),norm(mquality_list,5,weights),mquality_list[0],mquality_list[1],mquality_list[-1],
         mquality_list[-2],KG_list[0],KG_list[-1],condition_list[0],condition_list[-1],norm(quality_new_list,1),norm(quality_new_list,3),norm(quality_new_list,4,weights),
-        norm(quality_new_list,5,weights)]
+        norm(quality_new_list,5,weights),norm(quality_newr_list,1),norm(quality_newr_list,3),norm(quality_newr_list,4,weights), norm(quality_newr_list,5,weights), 
+        norm(quality_newpr_list,1),norm(quality_newpr_list,3),norm(quality_newpr_list,4,weights), norm(quality_newpr_list,5,weights), norm(quality_newr_list,6,weights),
+         norm(quality_newr_list,7,weights)]
 
 
 if __name__ == "__main__":
