@@ -80,6 +80,7 @@ def get_quality(model_params):
                     condition_list.append(condition)
                     ER_list.append(ER)
                     KG_list.append(KG)
+                    print(str(math.atan(KG/(1.0-1.0/condition))))
                     quality_list.append(math.atan(KG/(1.0-1.0/condition)))
     #print(str(len(KG_list)),str(sum(weights)))
     if(len(KG_list)==0):

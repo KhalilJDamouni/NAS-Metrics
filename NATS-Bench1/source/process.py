@@ -159,7 +159,7 @@ def get_metrics(params,key1,key2):
         out_quality_new = 0
         out_quality_newp = 0
     print("out:", out_KG, out_condition)
-    return (in_rank + out_rank)/2, (in_KG + out_KG)/2, (in_condition + out_condition), (in_ER + out_ER)/2, in_quality, out_quality, in_weight, out_weight, in_quality_new, out_quality_new, in_quality_newp, out_quality_newp
+    return (in_rank + out_rank)/2, (in_KG + out_KG), (in_condition + out_condition), (in_ER + out_ER)/2, in_quality, out_quality, in_weight, out_weight, in_quality_new, out_quality_new, in_quality_newp, out_quality_newp
 
 
 if __name__ == "__main__":
