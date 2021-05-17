@@ -59,7 +59,6 @@ def get_quality(model_params):
             if('weight' in k and len(list(v.size())) == 4 and v.shape[3]!=1):
                 #print(k)
                 #print("\n")
-                print(type(v))
                 rank, KG, condition, ER, in_quality, out_quality, in_weight, out_weight, in_quality_new, out_quality_new, in_quality_newp, out_quality_newp = process.get_metrics(model_params,i,k)
                 #print(KG)
                 if(in_quality>0):
@@ -80,7 +79,6 @@ def get_quality(model_params):
                     condition_list.append(condition)
                     ER_list.append(ER)
                     KG_list.append(KG)
-                    print(str(np.arctan2(KG,(1.0-1.0/condition))))
                     quality_list.append(np.arctan2(KG,(1.0-1.0/condition)))
     #print(str(len(KG_list)),str(sum(weights)))
     if(len(KG_list)==0):

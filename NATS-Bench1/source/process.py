@@ -143,7 +143,7 @@ def get_metrics(params,key1,key2):
         in_quality = 0
         in_quality_new = 0
         in_quality_newp = 0
-    print("in:", in_KG, in_condition)
+    #print("in:", in_KG, in_condition)
     mode_4_unfold = layer_tensor
     mode_4_unfold = torch.reshape(
                         mode_4_unfold, [tensor_size[0], tensor_size[1] *
@@ -158,7 +158,7 @@ def get_metrics(params,key1,key2):
         out_quality = 0
         out_quality_new = 0
         out_quality_newp = 0
-    print("out:", out_KG, out_condition)
+    #print("out:", out_KG, out_condition)
     return (in_rank + out_rank)/2, (in_KG + out_KG), (in_condition + out_condition), (in_ER + out_ER)/2, in_quality, out_quality, in_weight, out_weight, in_quality_new, out_quality_new, in_quality_newp, out_quality_newp
 
 
