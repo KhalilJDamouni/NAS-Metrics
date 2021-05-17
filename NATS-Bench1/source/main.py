@@ -80,12 +80,13 @@ def get_quality(model_params):
                     condition_list.append(condition)
                     ER_list.append(ER)
                     KG_list.append(KG)
-                    print(str(math.atan(KG/(1.0-1.0/condition))))
-                    quality_list.append(math.atan(KG/(1.0-1.0/condition)))
+                    print(str(np.arctan2(KG,(1.0-1.0/condition))))
+                    quality_list.append(np.arctan2(KG,(1.0-1.0/condition)))
     #print(str(len(KG_list)),str(sum(weights)))
     if(len(KG_list)==0):
         return None
     else:
+        print(norm(quality_list,2))
         return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(condition_list,3),norm(ER_list,1),
         norm(mquality_list,1),norm(mquality_list,3),norm(mquality_list,4,weights),norm(mquality_list,5,weights),mquality_list[0],mquality_list[1],mquality_list[-1],
         mquality_list[-2],KG_list[0],KG_list[-1],condition_list[0],condition_list[-1],norm(quality_new_list,1),norm(quality_new_list,3),norm(quality_new_list,4,weights),

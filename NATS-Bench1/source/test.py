@@ -18,7 +18,7 @@ from scipy.optimize import minimize_scalar
 from pprint import pprint
 
 model = None
-model = torch.load('C://Users/jjaeg/Desktop/Nas-metrics/Nas-Metrics/NATS-Bench1/source/trial_0_epoch_25.pth.tar')
+model = torch.load(str(sys.path[0][0:-7])+'/source/trial_0_epoch_25.pth.tar')
 
 param_dict = dict()
 param_dict[111] = dict()
