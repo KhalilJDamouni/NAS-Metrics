@@ -101,7 +101,7 @@ def compute_low_rank(tensor: torch.Tensor,
         tensor_size = tensor.shape
         if tensor_size[0] > tensor_size[1]:
             tensor = tensor.T
-            tensor_size = tensor.shape
+            #tensor_size = tensor.shape
         U_approx, S_approx, V_approx = EVBMF(tensor)
     except RuntimeError:
         return None, None, None
