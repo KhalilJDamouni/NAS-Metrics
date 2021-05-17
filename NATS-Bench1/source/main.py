@@ -84,7 +84,6 @@ def get_quality(model_params):
     if(len(KG_list)==0):
         return None
     else:
-        print(norm(quality_list,2))
         return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(condition_list,3),norm(ER_list,1),
         norm(mquality_list,1),norm(mquality_list,3),norm(mquality_list,4,weights),norm(mquality_list,5,weights),mquality_list[0],mquality_list[1],mquality_list[-1],
         mquality_list[-2],KG_list[0],KG_list[-1],condition_list[0],condition_list[-1],norm(quality_new_list,1),norm(quality_new_list,3),norm(quality_new_list,4,weights),
@@ -97,7 +96,7 @@ if __name__ == "__main__":
     api = create(sys.path[0][0:-7]+'/fake_torch_dir/models', 'tss', fast_mode=True, verbose=False)
     dataset = 'cifar10'
     hp = '200'
-    early_stop=300
+    early_stop=600
     i=0
     new = 1
 
@@ -108,8 +107,8 @@ if __name__ == "__main__":
     if(new):
         file_name = save.get_name()
     else:
-        file_name = "outputs/correlation-" + "05-12-2021_16-25-05" + ".csv"
-        lastmodel = 10505
+        file_name = "outputs/correlation-" + "05-17-2021_13-49-46" + ".csv"
+        lastmodel = 10124
     '''
     params = api.get_net_param(11197, dataset, None)
     model_val = get_quality(params)
@@ -131,7 +130,7 @@ if __name__ == "__main__":
             model_num = int((model.split(os.path.sep)[-1]).split('.')[0])
             print(str(i+1)+'/'+str(early_stop))
             print("model: "+str(model_num))
-            params = api.get_net_param(model_num, dataset, None)
+            params = api.get_net_param(model_num, dataset, hp=hp, seed=None)
             model_val = get_quality(params)
             if(model_val):
                 model_vals.append(model_num)
