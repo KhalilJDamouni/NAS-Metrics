@@ -59,6 +59,7 @@ def get_quality(model_params):
             if('weight' in k and len(list(v.size())) == 4 and v.shape[3]!=1):
                 #print(k)
                 #print("\n")
+                print(type(v))
                 rank, KG, condition, ER, in_quality, out_quality, in_weight, out_weight, in_quality_new, out_quality_new, in_quality_newp, out_quality_newp = process.get_metrics(model_params,i,k)
                 #print(KG)
                 if(in_quality>0):

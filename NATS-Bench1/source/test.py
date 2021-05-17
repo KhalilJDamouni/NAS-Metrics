@@ -9,15 +9,22 @@ import main
 import process
 import correlate
 import save
+import resnet_cifar
 import numpy.linalg as LA
 import numpy as np
+import torch
 from nats_bench import create
 from scipy.optimize import minimize_scalar
 from pprint import pprint
 
-api = create(sys.path[0][0:-7]+'/fake_torch_dir/models', 'tss', fast_mode=True, verbose=False)
-dataset = 'cifar10'
-hp = '200'
+model = None
+model = torch.load('C://Users/jjaeg/Desktop/Nas-metrics/Nas-Metrics/NATS-Bench1/source/trial_0_epoch_25.pth.tar')
 
-params = api.get_net_param(11197, dataset, None)
-model_val = main.get_quality(params)
+param_dict = dict()
+param_dict[111] = dict()
+
+for name in model['state_dict_network']:
+    param_dict[111][name] = model['state_dict_network'][name]
+
+main.get_quality(param_dict)
+
