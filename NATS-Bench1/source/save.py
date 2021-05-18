@@ -9,10 +9,9 @@ def get_name():
 
     with open(name, 'w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['model_num','test_acc','test_loss','train_acc','train_loss','quality_L1',
-         'quality_L2','quality_prod','KG_L1', 'MC_L1','MC_L3','ER_L1','mquality_L1','mquality_prod','mquality-wL1',
-         'mquality-wp','qlayer0mode3','qlayer0mode4','qlayer-1mode3','qlayer-1mode4','KG0','KG-1','MC0','MC-1','qnL1','qnL3','qnL4','qnL5',
-         'qnrL1','qnrL3','qnrL4','qnrL5','qnprL1','qnprL3','qnprL4','qnprL5','qnrL6','qnrL7'])
+        writer.writerow(['model_num','test_acc','test_loss','train_acc','train_loss','g-gap','quality_L1',
+         'quality_L2','quality_prod','ER_L1','mquality_L1','mquality_prod','mquality-wL1',
+         'mquality-wp'])
         #file.write('\n')
 
     return name
