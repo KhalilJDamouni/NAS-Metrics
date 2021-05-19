@@ -45,52 +45,52 @@ def norm(x, L, a=[]):
 
 
 def get_quality(model_params):
-    quality_list = []
-    quality_new_list = []
-    quality_newr_list = []
-    quality_newpr_list = []
-    KG_list = []
-    condition_list = []
-    ER_list = []
-    mquality_list = []
-    weights = []
+    ER_BE_list = []
+    ER_AE_list = []
+    mquality_BE_list = []
+    mquality_AE_list = []
+    weight_ER_BE_list = []
+    weight_ER_AE_list = []
+    weight_mq_BE_list = []
+    weight_mq_AE_list = []
     for i in model_params:
         for k, v in (model_params[i]).items():
             if('weight' in k and len(list(v.size())) == 4 and v.shape[3]!=1):
                 #print(k)
                 #print("\n")
-                rank, KG, condition, ER, in_quality, out_quality, in_weight, out_weight, in_quality_new, out_quality_new, in_quality_newp, out_quality_newp = process.get_metrics(model_params,i,k)
-                #print(KG)
-                if(in_quality>0):
-                    mquality_list.append(in_quality)
-                    quality_new_list.append(in_quality_new)
-                    quality_newr_list.append(1/in_quality_new)
-                    quality_newpr_list.append(1/in_quality_newp)
-                    weights.append(in_weight)
-                if(out_quality>0):
-                    mquality_list.append(out_quality)
-                    quality_new_list.append(out_quality_new)
-                    quality_newr_list.append(1/out_quality_new)
-                    quality_newpr_list.append(1/out_quality_newp)
-                    weights.append(out_weight)
-                if(KG>0 and condition>1):
-                    #print(condition)
-                    #print(math.atan(KG/(1.0-1.0/condition)))
-                    condition_list.append(condition)
-                    ER_list.append(ER)
-                    KG_list.append(KG)
-                    quality_list.append(np.arctan2(KG,(1.0-1.0/condition)))
-    #print(str(len(KG_list)),str(sum(weights)))
-    if(len(KG_list)==0):
+                mquality_BE, mquality_AE, ER_BE, ER_AE, weight_BE, weight_AE = process.get_metrics(model_params,i,k)
+                if(mquality_BE[0]>0):
+                    mquality_BE_list.append(mquality_BE[0])
+                    weight_mq_BE_list.append(weight_BE[0])
+                if(mquality_BE[1]>0):
+                    mquality_BE_list.append(mquality_BE[1])
+                    weight_mq_BE_list.append(weight_BE[1])
+                if(mquality_AE[0]>0):
+                    mquality_AE_list.append(mquality_AE[0])
+                    weight_mq_AE_list.append(weight_AE[0])
+                if(mquality_AE[1]>0):
+                    mquality_AE_list.append(mquality_AE[1])
+                    weight_mq_AE_list.append(weight_AE[1])
+                if(ER_BE[0]>0):
+                    ER_BE_list.append(ER_BE[0])
+                    weight_ER_BE_list.append(weight_BE[0])
+                if(ER_BE[1]>0):
+                    ER_BE_list.append(ER_BE[1])
+                    weight_ER_BE_list.append(weight_BE[1])
+                if(ER_AE[0]>0):
+                    ER_AE_list.append(ER_AE[0])
+                    weight_ER_AE_list.append(weight_AE[0])
+                if(ER_AE[1]>0):
+                    ER_AE_list.append(ER_AE[1])
+                    weight_ER_AE_list.append(weight_AE[1])
+    if(len(mquality_BE_list)==0):
+        print("empty BE")
         return None
     else:
-        #print(norm(quality_list,2))
-        return [norm(quality_list,1),norm(quality_list,2),norm(quality_list,3),norm(KG_list,1),norm(condition_list,1),norm(condition_list,3),norm(ER_list,1),
-        norm(mquality_list,1),norm(mquality_list,3),norm(mquality_list,4,weights),norm(mquality_list,5,weights),mquality_list[0],mquality_list[1],mquality_list[-1],
-        mquality_list[-2],KG_list[0],KG_list[-1],condition_list[0],condition_list[-1],norm(quality_new_list,1),norm(quality_new_list,3),norm(quality_new_list,4,weights),
-        norm(quality_new_list,5,weights),norm(quality_newr_list,1),norm(quality_newr_list,3),norm(quality_newr_list,4,weights), norm(quality_newr_list,5,weights), 
-        norm(quality_newpr_list,1),norm(quality_newpr_list,3),norm(quality_newpr_list,4,weights), norm(quality_newpr_list,5,weights), norm(quality_newr_list,6,weights),
-         norm(quality_newr_list,7,weights)]
+        return [norm(mquality_BE_list,1),norm(mquality_BE_list,2),norm(mquality_BE_list,3),norm(mquality_BE_list,4,weight_mq_BE_list),norm(mquality_BE_list,5,weight_mq_BE_list),
+norm(mquality_AE_list,1),norm(mquality_AE_list,2),norm(mquality_AE_list,3),norm(mquality_AE_list,4,weight_mq_AE_list),norm(mquality_AE_list,5,weight_mq_AE_list),        
+norm(ER_BE_list,1),norm(ER_BE_list,2),norm(ER_BE_list,3),norm(ER_BE_list,4,weight_ER_BE_list),norm(ER_BE_list,5,weight_ER_BE_list),
+norm(ER_AE_list,1),norm(ER_AE_list,2),norm(ER_AE_list,3),norm(ER_AE_list,4,weight_ER_AE_list),norm(ER_AE_list,5,weight_ER_AE_list)]
 
 
 if __name__ == "__main__":
@@ -98,9 +98,9 @@ if __name__ == "__main__":
     api = create(sys.path[0][0:-7]+'/fake_torch_dir/models'+searchspace[0], searchspace, fast_mode=True, verbose=False)
     dataset = 'cifar10'
     hp = '90'
-    early_stop=1700
+    early_stop=650
     i=0
-    new = 0
+    new = 1
 
     pickles=glob.glob(sys.path[0][0:-7]+'/fake_torch_dir/models'+searchspace[0]+'/*')
     #model_qualities = []
@@ -117,6 +117,9 @@ if __name__ == "__main__":
 
     '''
     for model in pickles:
+        if((model.split(os.path.sep)[-1]).split('.')[0]=='meta'):
+            print("skipping meta")
+            continue
         if(not new):
             i+=1
             early_stop+=1
@@ -127,8 +130,7 @@ if __name__ == "__main__":
         model_vals = []
         if(i+1>early_stop):
             break
-
-        #try:
+        
         model_num = int((model.split(os.path.sep)[-1]).split('.')[0])
         print(str(i+1)+'/'+str(early_stop))
         print("model: "+str(model_num))
@@ -143,14 +145,14 @@ if __name__ == "__main__":
             model_vals.append(info['test-loss'])
             model_vals.append(info['train-accuracy']/100)
             model_vals.append(info['train-loss'])
+            model_vals.append((info['test-accuracy']-info['train-accuracy'])/100)
             #model_qualities.append(get_quality(params))
             model_vals.extend(model_val)
             #print(model_vals)
             save.write(file_name,model_vals)
         else:
             print("skipping 0 model")
-        #except:
-            #print("skipping meta")
+
             
         print("\n")
         i+=1

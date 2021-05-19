@@ -1,13 +1,18 @@
 import csv
 import pandas as pd
 import matplotlib.pyplot as plt
+import correlate
 
 
-filename = "layers.csv"
-x = "KG-1/MC-1"
+filename = "correlation-05-19-2021_10-42-47.csv"
+x = "erBE_L2"
 y = "test_acc"
 
 data = pd.read_csv("outputs/"+filename)
+
+print(correlate.pearson_corr(data[x],data[y]))
+print(correlate.rank_order_corr(data[x],data[y]))
+
 plt.plot(data[x],data[y], '+', color='blue')
 plt.xlabel(x)
 plt.ylabel(y)

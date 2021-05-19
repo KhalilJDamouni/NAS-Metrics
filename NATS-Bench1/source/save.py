@@ -9,10 +9,8 @@ def get_name():
 
     with open(name, 'w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['model_num','test_acc','test_loss','train_acc','train_loss','g-gap','quality_L1',
-         'quality_L2','quality_prod','ER_L1','mquality_L1','mquality_prod','mquality-wL1',
-         'mquality-wp'])
-        #file.write('\n')
+        writer.writerow(['model_num','test_acc','test_loss','train_acc','train_loss','g_gap','mqBE_L1','mqBE_L2','mqBE_L3','mqBE_L4','mqBE_L5',
+        'mqAE_L1','mqAE_L2','mqAE_L3','mqAE_L4','mqAE_L5','erBE_L1','erBE_L2','erBE_L3','erBE_L4','erBE_L5','erAE_L1','erAE_L2','erAE_L3','erAE_L4','erAE_L5'])
 
     return name
 
@@ -20,7 +18,6 @@ def write(name, line):
     with open(name, 'a', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(line)
-        #file.write('\n')
 
 '''
 if __name__ == "__main__":

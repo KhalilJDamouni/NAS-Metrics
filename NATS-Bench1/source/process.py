@@ -93,8 +93,7 @@ def phi1(x, alpha):
 def tau(x, alpha):
     return 0.5 * (x-(1+alpha) + np.sqrt((x-(1+alpha))**2 - 4*alpha))
 
-def compute_low_rank(tensor: torch.Tensor,
-                        normalizer: float) -> torch.Tensor:
+def compute_low_rank(tensor: torch.Tensor) -> torch.Tensor:
     if tensor.requires_grad:
         tensor = tensor.detach()
     try:
@@ -105,61 +104,98 @@ def compute_low_rank(tensor: torch.Tensor,
         U_approx, S_approx, V_approx = EVBMF(tensor)
     except RuntimeError:
         return None, None, None
-    rank = S_approx.shape[0] / tensor_size[0]  # normalizer
     low_rank_eigen = torch.diag(S_approx).data.cpu().numpy()
     #print(tensor)
     if len(low_rank_eigen) != 0:
         condition = low_rank_eigen[0] / low_rank_eigen[-1]
-        sum_low_rank_eigen = low_rank_eigen / \
-            max(low_rank_eigen)
-        effective_rank = sum_low_rank_eigen/tensor_size[0]
+
+        effective_rank = low_rank_eigen/np.sum(low_rank_eigen)
         effective_rank_ln = np.log(effective_rank)
         effective_rank = np.multiply(effective_rank,effective_rank_ln)
-        effective_rank = np.sum(effective_rank)
+        effective_rank = -np.sum(effective_rank)
+
+        sum_low_rank_eigen = low_rank_eigen/max(low_rank_eigen)
         sum_low_rank_eigen = np.sum(sum_low_rank_eigen)
+        KG = sum_low_rank_eigen / tensor_size[0]
     else:
         condition = 0
         effective_rank = 0
-        sum_low_rank_eigen = 0
-    KG = sum_low_rank_eigen / tensor_size[0]  # normalizer
-    return rank, KG, condition, effective_rank
+        KG = 0
+    return KG, condition, effective_rank
+
+def compute(tensor: torch.Tensor) -> torch.Tensor:
+    if tensor.requires_grad:
+        tensor = tensor.detach()
+    try:
+        tensor_size = tensor.shape
+        if tensor_size[0] > tensor_size[1]:
+            tensor = tensor.T
+            tensor_size = tensor.shape
+        U, S, V = torch.svd(tensor)
+    except RuntimeError:
+        return None, None, None
+    low_rank_eigen = S.data.cpu().numpy()
+    if len(low_rank_eigen) != 0:
+        condition = low_rank_eigen[0] / low_rank_eigen[-1]
+
+        effective_rank = low_rank_eigen/np.sum(low_rank_eigen)
+        effective_rank_ln = np.log(effective_rank)
+        effective_rank = np.multiply(effective_rank,effective_rank_ln)
+        effective_rank = -np.sum(effective_rank)
+
+        sum_low_rank_eigen = low_rank_eigen/max(low_rank_eigen)
+        sum_low_rank_eigen = np.sum(sum_low_rank_eigen)
+        KG = sum_low_rank_eigen / tensor_size[0]
+    else:
+        condition = 0
+        effective_rank = 0
+        KG = 0
+
+    return KG, condition, effective_rank
 
 def get_metrics(params,key1,key2):
     layer_tensor=params[key1][key2]
     tensor_size = layer_tensor.shape
     #print(tensor_size)
     #print(layer_tensor)
+
     mode_3_unfold = layer_tensor.permute(1, 0, 2, 3)
-    mode_3_unfold = torch.reshape(
-                        mode_3_unfold, [tensor_size[1], tensor_size[0] *
-                                        tensor_size[2] * tensor_size[3]])
-    in_rank, in_KG, in_condition, in_ER = compute_low_rank(mode_3_unfold,tensor_size[1])
-    in_weight = min(tensor_size[1],tensor_size[0] * tensor_size[2] * tensor_size[3])
+    mode_3_unfold = torch.reshape(mode_3_unfold, [tensor_size[1], tensor_size[0]*tensor_size[2]*tensor_size[3]])
+
+    in_KG_AE, in_condition_AE, in_ER_AE = compute_low_rank(mode_3_unfold)
+    in_weight_AE = min(tensor_size[1],tensor_size[0] * tensor_size[2] * tensor_size[3])
     try:
-        in_quality = math.atan(in_KG/(1-1/in_condition))
-        in_quality_new = in_KG/in_condition
-        in_quality_newp = in_KG/(1/1/in_condition)
+        in_quality_AE = math.atan(in_KG_AE/(1-1/in_condition_AE))
     except:
-        in_quality = 0
-        in_quality_new = 0
-        in_quality_newp = 0
+        in_quality_AE = 0
+
+    in_KG_BE, in_condition_BE, in_ER_BE = compute(mode_3_unfold)
+    in_weight_BE = min(tensor_size[1],tensor_size[0] * tensor_size[2] * tensor_size[3])
+    try:
+        in_quality_BE = math.atan(in_KG_BE/(1-1/in_condition_BE))
+    except:
+        in_quality_BE = 0
+
     #print("in:", in_KG, in_condition)
     mode_4_unfold = layer_tensor
-    mode_4_unfold = torch.reshape(
-                        mode_4_unfold, [tensor_size[0], tensor_size[1] *
-                                        tensor_size[2] * tensor_size[3]])
-    out_rank, out_KG, out_condition, out_ER = compute_low_rank(mode_4_unfold, tensor_size[0])
-    out_weight = min(tensor_size[0],tensor_size[1] * tensor_size[2] * tensor_size[3])
+    mode_4_unfold = torch.reshape(mode_4_unfold, [tensor_size[0], tensor_size[1]*tensor_size[2]*tensor_size[3]])
+
+    out_KG_AE, out_condition_AE, out_ER_AE = compute_low_rank(mode_4_unfold)
+    out_weight_AE = min(tensor_size[0],tensor_size[1] * tensor_size[2] * tensor_size[3])
     try:
-        out_quality = math.atan(out_KG/(1-1/out_condition))
-        out_quality_new = out_KG/out_condition
-        out_quality_newp = out_KG/(1/1/out_condition)
+        out_quality_AE = math.atan(out_KG_AE/(1-1/out_condition_AE))
     except:
-        out_quality = 0
-        out_quality_new = 0
-        out_quality_newp = 0
+        out_quality_AE = 0
+
+    out_KG_BE, out_condition_BE, out_ER_BE = compute(mode_3_unfold)
+    out_weight_BE = min(tensor_size[1],tensor_size[0] * tensor_size[2] * tensor_size[3])
+    try:
+        out_quality_BE = math.atan(out_KG_BE/(1-1/out_condition_BE))
+    except:
+        out_quality_BE = 0
+
     #print("out:", out_KG, out_condition)
-    return (in_rank + out_rank)/2, (in_KG + out_KG), (in_condition + out_condition), (in_ER + out_ER)/2, in_quality, out_quality, in_weight, out_weight, in_quality_new, out_quality_new, in_quality_newp, out_quality_newp
+    return [in_quality_BE, out_quality_BE], [in_quality_AE, out_quality_AE], [in_ER_BE, out_ER_BE], [in_ER_AE, out_ER_AE], [in_weight_BE, out_weight_BE], [in_weight_AE, out_weight_AE]
 
 
 if __name__ == "__main__":
