@@ -5,8 +5,8 @@ import correlate
 
 
 filename = "correlation-05-19-2021_10-42-47.csv"
-x = "erBE_L2"
-y = "test_acc"
+x = "mqBE_L5"
+y = "g-gap"
 
 data = pd.read_csv("outputs/"+filename)
 
