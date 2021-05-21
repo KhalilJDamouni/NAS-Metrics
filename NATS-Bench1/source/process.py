@@ -104,6 +104,7 @@ def compute_low_rank(tensor: torch.Tensor) -> torch.Tensor:
         U_approx, S_approx, V_approx = EVBMF(tensor)
     except RuntimeError:
         return None, None, None
+    rank = S_approx.shape[0] / tensor_size[0]
     low_rank_eigen = torch.diag(S_approx).data.cpu().numpy()
     #print(tensor)
     if len(low_rank_eigen) != 0:
@@ -121,7 +122,7 @@ def compute_low_rank(tensor: torch.Tensor) -> torch.Tensor:
         condition = 0
         effective_rank = 0
         KG = 0
-    return KG, condition, effective_rank
+    return KG, condition, effective_rank, rank
 
 def compute(tensor: torch.Tensor) -> torch.Tensor:
     if tensor.requires_grad:
@@ -162,7 +163,7 @@ def get_metrics(params,key1,key2):
     mode_3_unfold = layer_tensor.permute(1, 0, 2, 3)
     mode_3_unfold = torch.reshape(mode_3_unfold, [tensor_size[1], tensor_size[0]*tensor_size[2]*tensor_size[3]])
 
-    in_KG_AE, in_condition_AE, in_ER_AE = compute_low_rank(mode_3_unfold)
+    in_KG_AE, in_condition_AE, in_ER_AE, in_rank_AE = compute_low_rank(mode_3_unfold)
     in_weight_AE = min(tensor_size[1],tensor_size[0] * tensor_size[2] * tensor_size[3])
     try:
         in_quality_AE = math.atan(in_KG_AE/(1-1/in_condition_AE))
@@ -180,7 +181,7 @@ def get_metrics(params,key1,key2):
     mode_4_unfold = layer_tensor
     mode_4_unfold = torch.reshape(mode_4_unfold, [tensor_size[0], tensor_size[1]*tensor_size[2]*tensor_size[3]])
 
-    out_KG_AE, out_condition_AE, out_ER_AE = compute_low_rank(mode_4_unfold)
+    out_KG_AE, out_condition_AE, out_ER_AE, out_rank_AE = compute_low_rank(mode_4_unfold)
     out_weight_AE = min(tensor_size[0],tensor_size[1] * tensor_size[2] * tensor_size[3])
     try:
         out_quality_AE = math.atan(out_KG_AE/(1-1/out_condition_AE))
@@ -195,7 +196,7 @@ def get_metrics(params,key1,key2):
         out_quality_BE = 0
 
     #print("out:", out_KG, out_condition)
-    return [in_quality_BE, out_quality_BE], [in_quality_AE, out_quality_AE], [in_ER_BE, out_ER_BE], [in_ER_AE, out_ER_AE], [in_weight_BE, out_weight_BE], [in_weight_AE, out_weight_AE]
+    return [in_quality_BE, out_quality_BE], [in_quality_AE, out_quality_AE], [in_ER_BE, out_ER_BE], [in_ER_AE, out_ER_AE], [in_weight_BE, out_weight_BE], [in_weight_AE, out_weight_AE], [in_rank_AE, out_rank_AE]
 
 
 if __name__ == "__main__":

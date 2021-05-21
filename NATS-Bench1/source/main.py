@@ -25,7 +25,7 @@ def norm(x, L, a=[]):
     if(L == 2):
         return LA.norm(x)/math.sqrt(len(x))
     if(L == 3):
-        return np.power(np.prod(x),1/len(x))
+        return np.prod(np.power(x,1/len(x)))
     if(L == 4):
         #weighted average
         return np.average(np.abs(x),weights=a)
@@ -49,16 +49,18 @@ def get_quality(model_params):
     ER_AE_list = []
     mquality_BE_list = []
     mquality_AE_list = []
+    rank_AE_list = []
     weight_ER_BE_list = []
     weight_ER_AE_list = []
     weight_mq_BE_list = []
     weight_mq_AE_list = []
+    weight_rank_AE_list = []
     for i in model_params:
         for k, v in (model_params[i]).items():
             if('weight' in k and len(list(v.size())) == 4 and v.shape[3]!=1):
                 #print(k)
                 #print("\n")
-                mquality_BE, mquality_AE, ER_BE, ER_AE, weight_BE, weight_AE = process.get_metrics(model_params,i,k)
+                mquality_BE, mquality_AE, ER_BE, ER_AE, weight_BE, weight_AE, rank_AE = process.get_metrics(model_params,i,k)
                 if(mquality_BE[0]>0):
                     mquality_BE_list.append(mquality_BE[0])
                     weight_mq_BE_list.append(weight_BE[0])
@@ -83,6 +85,12 @@ def get_quality(model_params):
                 if(ER_AE[1]>0):
                     ER_AE_list.append(ER_AE[1])
                     weight_ER_AE_list.append(weight_AE[1])
+                if(rank_AE[0]>0):
+                    rank_AE_list.append(rank_AE[0])
+                    weight_rank_AE_list.append(weight_AE[0])
+                if(rank_AE[1]>0):
+                    rank_AE_list.append(rank_AE[1])
+                    weight_rank_AE_list.append(weight_AE[1])
     if(len(mquality_BE_list)==0):
         print("empty BE")
         return None
@@ -90,15 +98,16 @@ def get_quality(model_params):
         return [norm(mquality_BE_list,1),norm(mquality_BE_list,2),norm(mquality_BE_list,3),norm(mquality_BE_list,4,weight_mq_BE_list),norm(mquality_BE_list,5,weight_mq_BE_list),
 norm(mquality_AE_list,1),norm(mquality_AE_list,2),norm(mquality_AE_list,3),norm(mquality_AE_list,4,weight_mq_AE_list),norm(mquality_AE_list,5,weight_mq_AE_list),        
 norm(ER_BE_list,1),norm(ER_BE_list,2),norm(ER_BE_list,3),norm(ER_BE_list,4,weight_ER_BE_list),norm(ER_BE_list,5,weight_ER_BE_list),
-norm(ER_AE_list,1),norm(ER_AE_list,2),norm(ER_AE_list,3),norm(ER_AE_list,4,weight_ER_AE_list),norm(ER_AE_list,5,weight_ER_AE_list)]
+norm(ER_AE_list,1),norm(ER_AE_list,2),norm(ER_AE_list,3),norm(ER_AE_list,4,weight_ER_AE_list),norm(ER_AE_list,5,weight_ER_AE_list),
+norm(rank_AE_list,1),norm(rank_AE_list,2),norm(rank_AE_list,3),norm(rank_AE_list,4,weight_rank_AE_list),norm(rank_AE_list,5,weight_rank_AE_list)]
 
 
 if __name__ == "__main__":
     searchspace = 'sss'
     api = create(sys.path[0][0:-7]+'/fake_torch_dir/models'+searchspace[0], searchspace, fast_mode=True, verbose=False)
     dataset = 'cifar10'
-    hp = '90'
-    early_stop=650
+    hp = '12'
+    early_stop=100000
     i=0
     new = 1
 
@@ -109,8 +118,8 @@ if __name__ == "__main__":
     if(new):
         file_name = save.get_name()
     else:
-        file_name = "outputs/" + "sss" + ".csv"
-        lastmodel = 24368
+        file_name = "outputs/" + "K_20-05-21_e12" + ".csv"
+        lastmodel = 31219
     '''
     params = api.get_net_param(11197, dataset, None)
     model_val = get_quality(params)
