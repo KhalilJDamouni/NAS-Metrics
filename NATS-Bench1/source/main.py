@@ -105,11 +105,11 @@ norm(rank_AE_list,1),norm(rank_AE_list,2),norm(rank_AE_list,3),norm(rank_AE_list
 if __name__ == "__main__":
     searchspace = 'sss'
     api = create(sys.path[0][0:-7]+'/fake_torch_dir/models'+searchspace[0], searchspace, fast_mode=True, verbose=False)
-    dataset = 'cifar10'
+    dataset = 'ImageNet16-120'
     hp = '12'
     early_stop=100000
     i=0
-    new = 1
+    new = 0
 
     pickles=glob.glob(sys.path[0][0:-7]+'/fake_torch_dir/models'+searchspace[0]+'/*')
     #model_qualities = []
@@ -118,8 +118,8 @@ if __name__ == "__main__":
     if(new):
         file_name = save.get_name()
     else:
-        file_name = "outputs/" + "K_20-05-21_e12" + ".csv"
-        lastmodel = 31219
+        file_name = "outputs/" + "imagenete12" + ".csv"
+        lastmodel = 31010
     '''
     params = api.get_net_param(11197, dataset, None)
     model_val = get_quality(params)
