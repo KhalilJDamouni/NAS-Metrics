@@ -56,17 +56,29 @@ if __name__ == "__main__":
 
 
     in_KG_BE = np.asarray(df.iloc[headers.index('in_s_be') + 1::len(headers),:])
+    in_KG_BE = ma.masked_array(in_KG_BE, mask=in_KG_BE==0)
     out_KG_BE = np.asarray(df.iloc[headers.index('out_s_be') + 1::len(headers),:])
+    out_KG_BE = ma.masked_array(out_KG_BE, mask=out_KG_BE==0)
     in_MC_BE = np.asarray(df.iloc[headers.index('in_condition_be') + 1::len(headers),:])
+    in_MC_BE = ma.masked_array(in_MC_BE, mask=in_MC_BE==0)
     out_MC_BE = np.asarray(df.iloc[headers.index('out_condition_be') + 1::len(headers),:])
+    out_MC_BE = ma.masked_array(out_MC_BE, mask=out_MC_BE==0)
     in_ER_BE = np.asarray(df.iloc[headers.index('in_er_be') + 1::len(headers),:])
+    in_ER_BE = ma.masked_array(in_ER_BE, mask=in_ER_BE==0)
     out_ER_BE = np.asarray(df.iloc[headers.index('out_er_be') + 1::len(headers),:])
+    out_ER_BE = ma.masked_array(out_ER_BE, mask=out_ER_BE==0)
     in_KG_AE = np.asarray(df.iloc[headers.index('in_s') + 1::len(headers),:])
+    in_KG_AE = ma.masked_array(in_KG_AE, mask=in_KG_AE==0)
     out_KG_AE = np.asarray(df.iloc[headers.index('out_s') + 1::len(headers),:])
+    out_KG_AE = ma.masked_array(out_KG_AE, mask=out_KG_AE==0)
     in_MC_AE = np.asarray(df.iloc[headers.index('in_condition') + 1::len(headers),:])
+    in_MC_AE = ma.masked_array(in_MC_AE, mask=in_MC_AE==0)
     out_MC_AE = np.asarray(df.iloc[headers.index('out_condition') + 1::len(headers),:])
+    out_MC_AE = ma.masked_array(out_MC_AE, mask=out_MC_AE==0)
     in_ER_AE = np.asarray(df.iloc[headers.index('in_er_ae') + 1::len(headers),:])
+    in_ER_AE = ma.masked_array(in_ER_AE, mask=in_ER_AE==0)
     out_ER_AE = np.asarray(df.iloc[headers.index('out_er_ae') + 1::len(headers),:])
+    out_ER_AE = ma.masked_array(out_ER_AE, mask=out_ER_AE==0)
 
     tag = 'test_acc1'
     if 'test_acc1' not in headers:
@@ -97,8 +109,6 @@ if __name__ == "__main__":
     in_QG_AE = np.arctan2(in_KG_AE,(1-1/in_MC_AE))
     out_QG_AE = np.arctan2(out_KG_AE,(1-1/out_MC_AE))
 
-    print(in_QG_BE.shape)
-
     in_QG_BE = [norm(in_QG_BE,2),norm(in_QG_BE,3),norm(in_QG_BE,5,weights)]
     out_QG_BE = [norm(out_QG_BE,2),norm(out_QG_BE,3),norm(out_QG_BE,5,weights)]
     in_QG_AE = [norm(in_QG_AE,2),norm(in_QG_AE,3),norm(in_QG_AE,5,weights)]
@@ -108,5 +118,3 @@ if __name__ == "__main__":
     out_ER_BE = [norm(out_ER_BE,2),norm(out_ER_BE,3),norm(out_ER_BE,5,weights)]
     in_ER_AE = [norm(in_ER_AE,2),norm(in_ER_AE,3),norm(in_ER_AE,5,weights)]
     out_ER_AE = [norm(out_ER_AE,2),norm(out_ER_AE,3),norm(out_ER_AE,5,weights)]
-
-    print(in_QG_AE)
