@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import correlate
 
 
-filename = "correlation-05-19-2021_10-42-47.csv"
-x = "mqBE_L5"
-y = "g-gap"
+filename = "cifar10e90.csv"
+x = "erBE_L2"
+y = "test_acc"
 
 data = pd.read_csv("outputs/"+filename)
 
